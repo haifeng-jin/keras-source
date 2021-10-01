@@ -1,4 +1,4 @@
-# Dive into Keras source code.
+# Dive into Keras source code
 
 This is a series of articles explaining the source code of [Keras](https://keras.io/).
 
