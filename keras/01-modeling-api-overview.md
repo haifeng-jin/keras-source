@@ -85,7 +85,7 @@ is in `/keras/engine/base_layer.py`, while the subclasses are in the
 
 The base classes, which builds the Keras overall framework, are in the
 `/keras/engine` directory. The implementation of each of the subclasses is in
-its corresponding directory. The file location logic can You can
+its corresponding directory. With this file location logic, you can
 navigate through the codebase.
 
 ### The import mechanism
