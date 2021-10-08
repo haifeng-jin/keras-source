@@ -65,6 +65,9 @@ Output:
 <tf.Variable 'my_module/my_variable:0' shape=(3,) dtype=int32, numpy=array([10, 20, 30], dtype=int32)>
 ```
 
+However, the name of a `tf.Variables` is only an internal identifier of the
+object, which should not be used directly by the users.
+
 Because it is not part of the Keras codebase, we will not dive into the
 implementation of it. Another feature of the class is that it inherits the
 `Trackable` class, which tracks all the `tf.Variable` instances in the

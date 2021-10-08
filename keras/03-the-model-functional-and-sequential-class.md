@@ -4,9 +4,13 @@
 
 ([Source](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/training.py#L103))
 
-The `Model` class is a subclass of `Layer`. In the following workflow, the
-`Model` class is not so different from the `Layer` class if you see it as a way
-to group the layers to build a computational graph.
+The `Model` class is a subclass of `Layer`. For more details of how to
+subclassing it to implement your own model, you may check out [this
+tutorial](https://keras.io/guides/making_new_layers_and_models_via_subclassing/).
+
+In the following workflow, the `Model` class is not so different from the
+`Layer` class if you see it as a way to group the layers to build a
+computational graph.
 
 ```py
 class MyModel(tf.keras.Model):
@@ -33,7 +37,11 @@ APIs. In summary, a `Model` can be trained by itself, but a `Layer` cannot.
 ([Source](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/functional.py#L41))
 
 There is another way of using the `Model` class besides subclassing it, which
-is the functional API as shown in the following example.
+is the functional API. It connects the layers to each other to form a directed
+acyclic graph (DAG), where the nodes are layer call events, and the edges are
+KerasTensors. Please refer to [this
+tutorial](https://keras.io/guides/functional_api/) for more details of how to
+use it. Following is a code example of using the functional API.
 
 ```py
 inputs = tf.keras.Input(shape=(3,))
@@ -114,7 +122,9 @@ layer.
 #### Connecting the layers
 
 The question we try to answer here is: How did the computational graph being
-recorded and fetched only given the `inputs` and `outputs`?
+recorded and fetched only given the `inputs` and `outputs`? This functionality
+is implemented in
+[`Functional._init_graph_network()`](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/functional.py#L112).
 
 The graph is being fetched starting from the `outputs`, which is a list of
 `KerasTensor`s. Each `KerasTensor` records the `Layer` instance that produces
@@ -229,10 +239,53 @@ topological order to produce the outputs.
 
 The `Sequential` class extends the `Functional` class. It mainly supports a
 special case of the `Functional` model, where only a single chain of layers in
-the model without any branches.
+the model without any branches. For more details of how to use it, you can
+check out [this tutorial](https://keras.io/guides/sequential_model/).
 
 It implements the `add()` method and the `pop()` method to easily handle adding
-an removing the layers. 
+an removing the layers.
+
+`Sequential` has two ways to build the model depending whether the
+`input_shape` of the model is know from the beginning.
+
+In the following example, the model knows the `input_shape` from the beginning.
+It just treats the model as a `Functional` model.
+
+```py
+model = keras.Sequential() model.add(keras.Input(shape=(10,)))
+model.add(keras.layers.Dense(units=10, activation='relu'))
+model.add(keras.layers.Dense(units=1))
+```
+
+However, in the following example, the model would not know the `input_shape`
+until it sees the first batch of training data. Therefore, the initialization
+of the computational graph is deferred.
+
+```py
+model = keras.Sequential()
+model.add(keras.layers.Dense(units=10, activation='relu'))
+model.add(keras.layers.Dense(units=1))
+```
+
+The pseudo-code for checking the two cases is as follows.
+
+```py
+class Sequential(Functional):
+  def add(self, layer):
+    ...
+    if self._has_input_shape:
+      # This is the funciton used by `Functional`
+      # to build the computational graph.
+      self._init_graph_network(self.inputs, self.outputs)
+    else:
+      self.layers.append(layer)
+    ...
+
+  def call(self, inputs, ...):
+    if not self._has_input_shape:
+      self._build_graph_network(inputs.shape)
+    ...
+```
 
 ### Summary
 

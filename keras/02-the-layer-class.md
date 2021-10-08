@@ -3,7 +3,8 @@
 ([Source](https://github.com/keras-team/keras/blob/r2.6/keras/engine/base_layer.py#L84))
 
 The `Layer` class is easy to understand. It is the base class for the neural
-network layers in Keras.
+network layers in Keras. It defines the forward pass of the computation in a
+layer.
 
 Here is a simple example of inheriting the `Layer` class to build a custom
 layer.
@@ -29,8 +30,9 @@ class SimpleDense(keras.layers.Layer):
 From this example, we can see that a `Layer` instance is a collection of
 tensors and computations between the tensors in its attributes and the input
 tensors. There are 4 methods to look into in the example. They are
-`__init__()`, `build()`, `add_weight()`, and `call()`. Let's see how they work
-one by one.
+`__init__()`, `build()`, `add_weight()`, and `call()`. The `__init__()`,
+`build()`, and `call()` are expected to be overriden by the users, while
+`add_weight()` is not. Let's see how they work one by one.
 
 The `__init__()` function is easy to understand. It just records the arguments
 from the caller with the attributes.
