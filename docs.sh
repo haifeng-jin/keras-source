@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-mkdocs build
+python3 -m mkdocs build
 git checkout -b gh-pages-temp
 git add -f site
 git commit -m "gh-pages update"
