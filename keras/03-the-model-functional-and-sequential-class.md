@@ -1,5 +1,3 @@
-## The `Model`, `Functional`, and `Sequential` class
-
 ### The `Model` class
 
 ([Source](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/training.py#L103))

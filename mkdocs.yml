@@ -1,0 +1,19 @@
+site_name: Dive into Keras Source Code
+theme:
+  name: material
+  palette:
+      scheme: default
+docs_dir: keras
+repo_url: https://github.com/haifeng-jin/keras-source
+site_url: https://haifeng-jin.github.io/keras-source
+edit_uri: ""
+site_description: "Dive into Keras Source Code"
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+
+nav:
+  - Introduction: 00-introduction.md
+  - Modeling API overview: 01-modeling-api-overview.md
+  - The Layer class: 02-the-layer-class.md
+  - The Model, Functional, and Sequential class: 03-the-model-functional-and-sequential-class.md

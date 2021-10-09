@@ -1,5 +1,3 @@
-## The `Layer` class
-
 ([Source](https://github.com/keras-team/keras/blob/r2.6/keras/engine/base_layer.py#L84))
 
 The `Layer` class is easy to understand. It is the base class for the neural

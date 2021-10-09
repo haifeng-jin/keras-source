@@ -1,5 +1,3 @@
-## Modeling API overview
-
 The modeling API of Keras is responsible for putting the layers or TensorFlow
 operations together to create a model before training.
 
