@@ -14,6 +14,6 @@ markdown_extensions:
 
 nav:
   - Introduction: index.md
-  - Modeling API overview: 01-modeling-api-overview.md
-  - The Layer class: 02-the-layer-class.md
-  - The Model, Functional, and Sequential class: 03-the-model-functional-and-sequential-class.md
+  - 1. Modeling API overview: 01-modeling-api-overview.md
+  - 2. The Layer class: 02-the-layer-class.md
+  - 3. The Model, Functional, and Sequential class: 03-the-model-functional-and-sequential-class.md

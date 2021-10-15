@@ -26,11 +26,12 @@ class SimpleDense(keras.layers.Layer):
 ```
 
 From this example, we can see that a `Layer` instance is a collection of
-tensors and computations between the tensors in its attributes and the input
-tensors. There are 4 methods to look into in the example. They are
-`__init__()`, `build()`, `add_weight()`, and `call()`. The `__init__()`,
-`build()`, and `call()` are expected to be overriden by the users, while
-`add_weight()` is not. Let's see how they work one by one.
+tensors and computations between them. It trackes the tensors in its
+attributes, and defines the computation in `call()`.  There are 4 methods to
+look into in the example. They are `__init__()`, `build()`, `add_weight()`, and
+`call()`. The `__init__()`, `build()`, and `call()` are expected to be
+overriden by the users, while `add_weight()` is not. Let's see how they work
+one by one.
 
 The `__init__()` function is easy to understand. It just records the arguments
 from the caller with the attributes.
@@ -212,8 +213,8 @@ implements the forward pass of the layer.
 
 Calling the layer with a Numpy array, the `__call__()` function will just
 convert it to a `tf.Tensor` and call the `call()` function. If in eager mode,
-the function can be directly called. If in graph mode, we will need to convert
-the function to a computational graph before calling it.
+the function are directly called and executed eagerly. If in graph mode, we
+will need to convert the function to a computational graph before calling it.
 
 > **_TensorFlow API_** <br>
 `tf.function()` is the public API in TensorFlow for converting a normal
