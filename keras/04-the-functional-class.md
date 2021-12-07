@@ -1,5 +1,3 @@
-### The `Functional` class
-
 ([Source](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/functional.py#L41))
 
 There is another way of using the `Model` class besides subclassing it, which

@@ -1,5 +1,3 @@
-### The `Sequential` class
-
 ([Source](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/sequential.py#L41))
 
 The `Sequential` class extends the `Functional` class. It mainly supports a

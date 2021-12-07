@@ -1,5 +1,3 @@
-### The `Model` class
-
 ([Source](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/training.py#L103))
 
 The `Model` class is a subclass of `Layer`. For more details of how to
