@@ -16,4 +16,6 @@ nav:
   - Introduction: index.md
   - 1. Modeling API overview: 01-modeling-api-overview.md
   - 2. The Layer class: 02-the-layer-class.md
-  - 3. The Model, Functional, and Sequential class: 03-the-model-functional-and-sequential-class.md
+  - 3. The Model class: 03-the-model-class.md
+  - 4. The Functional class: 04-the-functional-class.md
+  - 5. The Sequential class: 05-the-sequential-class.md
