@@ -25,3 +25,5 @@ nav:
   - 6. Training API overview: 06-training-api-overview.md
   - 7. The compile function: 07-the-compile-function.md
   - 8. The fit function: 08-the-fit-function.md
+  - 9. The predict function: 09-the-predict-function.md
+  - 10. The evaluate function: 10-the-evaluate-function.md
