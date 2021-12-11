@@ -1,8 +1,9 @@
 site_name: Dive into Keras Source Code
 theme:
+  favicon: img/favicon.png
+  logo: img/logo.svg
   name: material
-  palette:
-      scheme: default
+
 docs_dir: keras
 repo_url: https://github.com/haifeng-jin/keras-source
 site_url: https://haifeng-jin.github.io/keras-source
@@ -11,6 +12,8 @@ site_description: "Dive into Keras Source Code"
 markdown_extensions:
   - pymdownx.highlight
   - pymdownx.superfences
+extra_css:
+  - stylesheets/extra.css
 
 nav:
   - Introduction: index.md
