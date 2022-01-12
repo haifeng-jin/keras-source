@@ -22,3 +22,5 @@ nav:
   - 3. The Model class: 03-the-model-class.md
   - 4. The Functional class: 04-the-functional-class.md
   - 5. The Sequential class: 05-the-sequential-class.md
+  - 6. Training API overview: 06-training-api-overview.md
+  - 7. The compile function: 07-the-compile-function.md
