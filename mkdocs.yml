@@ -27,3 +27,5 @@ nav:
   - 8. The fit function: 08-the-fit-function.md
   - 9. The predict function: 09-the-predict-function.md
   - 10. The evaluate function: 10-the-evaluate-function.md
+  - 11. The losses: 11-the-losses.md
+  - 12. The metrics: 12-the-metrics.md
