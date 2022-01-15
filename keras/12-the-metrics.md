@@ -28,7 +28,7 @@ for more details on how to implement a custom metric.
 
 To keep track of all the statistics in the metric, which are all
 `tf.Variable`s, `Metric` extends the `Layer` class. The `.update_state()` is
-compiled into a `tf.function` for faster computation. The pseudo code of the
+compiled into a `tf.function` for faster computation. The pseudo-code of the
 `Metric` class is shown as follows.
 
 ([Source](https://github.com/keras-team/keras/blob/v2.6.0/keras/metrics.py#L163))
@@ -57,13 +57,13 @@ defined by an argument passed to the initializer. For example, it can be
 computing the sum or mean of all the values in the tensor.
 
 [`Mean`](https://github.com/keras-team/keras/blob/v2.6.0/keras/metrics.py#L497)
-is a subclass of `Recude`, which just compute the mean of the values in the
+is a subclass of `Reduce`, which just computes the mean of the values in the
 tensor.
 
 [`MeanMetricWrapper`](https://github.com/keras-team/keras/blob/v2.6.0/keras/metrics.py#L619)
 is a subclass of `Mean`. It is similar to `LossFunctionWrapper` introduced in
 the previous section. It converts a metric function into a `Metric` subclass.
-It extends `Mean` because all metric functions needs to be averaged across
+It extends `Mean` because all metric functions need to be averaged across
 batches.
 
 In `Model.compile()`, all the metrics are wrapped up into a single
@@ -79,7 +79,7 @@ to `Metric` subclass instances.
 Notably, the metrics `MetricsContainer` receives is a list of lists of metrics
 because each head of the neural network model has a list of metrics.
 
-The pseudo code of `MetricsContainer` is shown as follows.
+The pseudo-code of `MetricsContainer` is shown as follows.
 
 ([Source](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/compile_utils.py#L289))
 ```py
