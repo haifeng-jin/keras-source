@@ -24,7 +24,7 @@ All the built-in losses are implemented in a similar way, which is to override
 the `call()` function. It computes the loss for the given ground truth and
 predictions.
 
-As you may know, the loss passed to `.compile()` can be a string, a function or
+As you may know, the loss passed to `.compile()` can be a string, a function, or
 a `Loss` subclass instance. However, they are all converted to a `Loss`
 subclass in the end. In `.comiple()`, it uses
 [`keras.losses.get()`](https://github.com/keras-team/keras/blob/v2.6.0/keras/losses.py#L2099)
@@ -33,7 +33,7 @@ name of the loss, and returns either a loss function or a `Loss` subclass
 instance. If it is a function, Keras would further convert it to a `Loss`
 subclass instance using the `LossFunctionWrapper`, which wraps the function
 into a `Loss` subclass instance. The overall converting process is shown in
-the following pseudo code.
+the following pseudo-code.
 
 ([Source](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/compile_utils.py#L273-L278))
 ```py
@@ -47,7 +47,7 @@ def get_loss(loss):
 
 The `LossFunctionWrapper` class is just a subclass of `Loss` and calls the
 provided loss function in its `.call()` function as shown in the following
-pseudo code. We also show an example of wrapping up a `mean_squared_error()`
+pseudo-code. We also show an example of wrapping up a `mean_squared_error()`
 loss function into a `Loss` subclass instance.
 
 ```py
@@ -76,15 +76,15 @@ training. It is done by the
 [`LossesContainer`](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/compile_utils.py#L100)
 class, which we mentioned when introducing `.compile()`. It manages a metric
 to track the historical loss values for the batches. Unlike a loss function,
-the metric can not only compute the metric for one batch of data, but also
+the metric can not only compute the metric for one batch of data but also
 record some statistics across the historical batches. We will introduce more
-details about how metrics works in Keras later.
+details about how metrics work in Keras later.
 
 
 The `LossesContainer` class also manages multiple losses, which is supported in
 Keras. The user can pass multiple losses to a model with multiple heads, where
 each loss corresponds to one head. The `LossesContainer` class contains all
-these losses and expose methods that can manage them as if they are a single
+these losses and exposes methods that can manage them as if they are a single
 object.
 
 This is also a pattern. Using containers to manage a collection of objects and
@@ -95,8 +95,8 @@ The only method of `LossesContainer` that directly called by the `Model` class
 is `.__call__()`. As we introduced in `.fit()` part, `.train_step()` use
 `self.compiled_loss(y, y_pred)` to compute the loss value.
 
-In `LossesContainer.__call__()`, it iterate though the different heads of the
-model and compute the losses and sum them up. The pseudo code is as follows.
+In `LossesContainer.__call__()`, it iterates through the different heads of the
+model and computes the losses, and sums them up. The pseudo-code is as follows.
 
 ([Source](https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/compile_utils.py#L161))
 ```py
