@@ -1,0 +1,856 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Dive into Keras Source Code">
+      
+      
+      
+        <link rel="canonical" href="https://haifeng-jin.github.io/keras-source/02-the-layer-class/">
+      
+      <link rel="icon" href="../img/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.1.4">
+    
+    
+      
+        <title>2. The Layer class - Dive into Keras Source Code</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bb3983ee.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#the-layerbuild-function" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Dive into Keras Source Code" class="md-header__button md-logo" aria-label="Dive into Keras Source Code" data-md-component="logo">
+      
+  <img src="../img/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Dive into Keras Source Code
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              2. The Layer class
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/haifeng-jin/keras-source" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Dive into Keras Source Code" class="md-nav__button md-logo" aria-label="Dive into Keras Source Code" data-md-component="logo">
+      
+  <img src="../img/logo.svg" alt="logo">
+
+    </a>
+    Dive into Keras Source Code
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/haifeng-jin/keras-source" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Introduction
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-modeling-api-overview/" class="md-nav__link">
+        1. Modeling API overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          2. The Layer class
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        2. The Layer class
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-layerbuild-function" class="md-nav__link">
+    The Layer.build() function
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-layeradd_weight-function" class="md-nav__link">
+    The Layer.add_weight() function
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-layercall-function" class="md-nav__link">
+    The Layer.call() function
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-compatibility-checking" class="md-nav__link">
+    Input compatibility checking
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-the-model-class/" class="md-nav__link">
+        3. The Model class
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-the-functional-class/" class="md-nav__link">
+        4. The Functional class
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-the-sequential-class/" class="md-nav__link">
+        5. The Sequential class
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-training-api-overview/" class="md-nav__link">
+        6. Training API overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-the-compile-function/" class="md-nav__link">
+        7. The compile function
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-the-fit-function/" class="md-nav__link">
+        8. The fit function
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../09-the-predict-function/" class="md-nav__link">
+        9. The predict function
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../10-the-evaluate-function/" class="md-nav__link">
+        10. The evaluate function
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../11-the-losses/" class="md-nav__link">
+        11. The losses
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../12-the-metrics/" class="md-nav__link">
+        12. The metrics
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../13-the-optimizers/" class="md-nav__link">
+        13. The optimizers
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-layerbuild-function" class="md-nav__link">
+    The Layer.build() function
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-layeradd_weight-function" class="md-nav__link">
+    The Layer.add_weight() function
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-layercall-function" class="md-nav__link">
+    The Layer.call() function
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#input-compatibility-checking" class="md-nav__link">
+    Input compatibility checking
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+  <h1>2. The Layer class</h1>
+
+<p>(<a href="https://github.com/keras-team/keras/blob/r2.6/keras/engine/base_layer.py#L84">Source</a>)</p>
+<p>The <code>Layer</code> class is easy to understand. It is the base class for the neural
+network layers in Keras. It defines the forward pass of the computation in a
+layer.</p>
+<p>Here is a simple example of inheriting the <code>Layer</code> class to build a custom
+layer.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+
+<span class="k">class</span> <span class="nc">SimpleDense</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="mi">32</span><span class="p">):</span>
+      <span class="nb">super</span><span class="p">(</span><span class="n">SimpleDense</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+  <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">w</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">),</span>
+                               <span class="n">initializer</span><span class="o">=</span><span class="s1">&#39;random_normal&#39;</span><span class="p">,</span>
+                               <span class="n">trainable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_weight</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,),</span>
+                               <span class="n">initializer</span><span class="o">=</span><span class="s1">&#39;random_normal&#39;</span><span class="p">,</span>
+                               <span class="n">trainable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+  <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+      <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">w</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
+</code></pre></div>
+<p>From this example, we can see that a <code>Layer</code> instance is a collection of
+tensors and computations between them. It trackes the tensors in its
+attributes, and defines the computation in <code>call()</code>.  There are 4 methods to
+look into in the example. They are <code>__init__()</code>, <code>build()</code>, <code>add_weight()</code>, and
+<code>call()</code>. The <code>__init__()</code>, <code>build()</code>, and <code>call()</code> are expected to be
+overriden by the users, while <code>add_weight()</code> is not. Let's see how they work
+one by one.</p>
+<p>The <code>__init__()</code> function is easy to understand. It just records the arguments
+from the caller with the attributes.</p>
+<h3 id="the-layerbuild-function">The <code>Layer.build()</code> function</h3>
+<p>(<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/base_layer.py#L440">Source</a>)</p>
+<p>The <code>build()</code> function is to create the <code>tf.Variable</code>s in the layer, which are
+the weight and bias in the example above. Because the <code>tf.Variable</code>s are used
+by the <code>call()</code> function, it would have to be created before the <code>call()</code>
+function is called. Moreover, we don't want the variables to be created
+multiple times. The question we want to answer here is how the build function
+is called under the hood.</p>
+<p>A lazy mechanism is implemented for <code>build()</code> with the <code>Layer._maybe_build()</code>
+function, whose core logic is shown as follows. The <code>Layer</code> instance would use
+the <code>self.built</code> attribute to record whether <code>build()</code> has been called. Any
+code that would need the layer to be built would call this <code>_maybe_build()</code>
+function to ensure the layer is built and built only once.</p>
+<p>(<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/base_layer.py#L2630">Source</a>)</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_maybe_build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">):</span>
+  <span class="o">...</span>
+  <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">built</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="n">input_shapes</span> <span class="o">=</span> <span class="n">tf_utils</span><span class="o">.</span><span class="n">get_shapes</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">input_shapes</span><span class="p">)</span>
+    <span class="o">...</span>
+  <span class="o">...</span>
+</code></pre></div>
+<p>The <code>tf_utils.get_shapes(inputs)</code> is a function in Keras to get the shapes of
+the input tensors.</p>
+<p>Here is an example of calling <code>_maybe_build()</code> secretly. We create a layer.
+We call the layer with a tensor without explicitly calling <code>build()</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">layer</span> <span class="o">=</span> <span class="n">SimpleDense</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">layer</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+</code></pre></div>
+<p>Output:</p>
+<div class="highlight"><pre><span></span><code>&lt;tf.Tensor: shape=(2, 4), dtype=float32, numpy=
+array([[ 0.02684689, -0.07216483, -0.04574138,  0.03925534],
+       [ 0.02684689, -0.07216483, -0.04574138,  0.03925534]],
+      dtype=float32)&gt;
+</code></pre></div>
+<p>The example runs successfully because the layer call would call the
+<code>__call__()</code> function, which calls the <code>call()</code> function. Before calling the
+<code>call()</code> function, <code>__call__()</code> would call <code>_maybe_build()</code> first to ensure the
+<code>tf.Variable</code>s are created. The pseudo-code is shown as follows.</p>
+<p>(<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/base_layer.py#L1030">Source</a>)</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Layer</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_maybe_build</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="o">...</span>
+</code></pre></div>
+<p>This lazy pattern appears many times in Keras source code. When ensuring
+something is called and don't want it to be called multiple times, you should
+use this pattern. </p>
+<h3 id="the-layeradd_weight-function">The <code>Layer.add_weight()</code> function</h3>
+<p>(<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/base_layer.py#L528">Source</a>)</p>
+<p>We would also like to see how these <code>tf.Variable</code>s are created in the
+<code>add_weight()</code> function. Here is the pseudo-code for the core logic of the
+<code>add_weight()</code> function.</p>
+<p>It creates the variable and asks the backend to track the variable. The
+variable will be appended to different lists depending on if it is trainable.</p>
+<p>The <a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/backend.py">backend</a>
+is a file containing some abstractions of the tensorflow functionalities. In
+many cases, the Keras code would interact with the backend instead of directly
+calling the TensorFlow APIs.</p>
+<p>(<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/base_layer.py#L528">Source</a>)</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Layer</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+  <span class="k">def</span> <span class="nf">add_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">variable</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># Create the variable.</span>
+    <span class="n">backend</span><span class="o">.</span><span class="n">track_variable</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>  <span class="c1"># Track the variable.</span>
+    <span class="k">if</span> <span class="n">trainable</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_trainable_weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">_non_trainable_weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">variable</span><span class="p">)</span>
+</code></pre></div>
+<p>The process for creating the variable is a <a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/base_layer.py#L647">function
+call</a>,
+which is not so different from using <code>tf.Variable(...)</code> to directly create the
+variable.</p>
+<p>We need the backend to track the variable for model saving and computation
+optimization. Now, the question is how the backend is tracking the variable.
+The code is shown as follows.</p>
+<p>(<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/backend.py#L1072">Source</a>)</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">track_variable</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+  <span class="sd">&quot;&quot;&quot;Tracks the given variable for initialization.&quot;&quot;&quot;</span>
+  <span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">executing_eagerly</span><span class="p">():</span>
+    <span class="k">return</span>
+  <span class="n">graph</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">graph</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s1">&#39;graph&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">get_graph</span><span class="p">()</span>
+  <span class="n">_GRAPH_VARIABLES</span><span class="p">[</span><span class="n">graph</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+</code></pre></div>
+<p>We encountered two important concepts: <a href="https://www.tensorflow.org/guide/eager">eager
+mode</a> and <a href="https://www.tensorflow.org/guide/intro_to_graphs">graph
+mode</a>. You can click the
+link for detailed introductions.</p>
+<p>Here is a short explanation. You can think of eager execution as plain Python
+code execution. The tensors are all concrete values instead of placeholders.
+The operations are read and executed only when we run that line of code in the
+Python interpreter.</p>
+<p>However, in graph mode, all the tensors and operations are collected in advance
+to build the computational graph before any actual value is input for
+computation. The graph is then optimized for execution speed. It is similar to
+a compiled language, like the C programming language, which you can turn on
+various optimization options to make the compiled executable file run faster.</p>
+<blockquote>
+<p><strong><em>TensorFlow API</em></strong> <br>
+<code>tf.executing_eagerly()</code> is to check whether TensorFlow is running in eager
+mode or not.
+(<a href="https://www.tensorflow.org/api_docs/python/tf/executing_eagerly">Link</a>)</p>
+</blockquote>
+<p>By default, everything runs in eager mode. As shown in the code above, in
+eager mode, we don't need to track the variables because it would not compile
+the computation graph.</p>
+<p>In graph mode, the code above would record the <code>tf.Variable</code> to the
+<code>_GRAPH_VARIABLES</code>, which is a dictionary mapping the TensorFlow computational
+graphs to a list of <code>tf.Variable</code>s. With this dictionary, Keras can track all
+the <code>tf.Variable</code>s for features like clearing the value of them.</p>
+<h3 id="the-layercall-function">The <code>Layer.call()</code> function</h3>
+<p>(<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/base_layer.py#L926">Source</a>)</p>
+<p>Let's see another use case of a layer. Instead of being part of a model, the
+layer can directly be called to get the output. We can call the layer with a
+Numpy array, it returns a <code>tf.Tensor</code> as the result.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">layer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,),</span> <span class="n">units</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># (20, 15)</span>
+</code></pre></div>
+<p>When we call <code>layer(x)</code>, it calls the <code>__call__()</code> function of the <code>Layer()</code>
+class. The <code>__call__()</code> function would call the <code>call()</code> function, which
+implements the forward pass of the layer.</p>
+<p>Calling the layer with a Numpy array, the <code>__call__()</code> function will just
+convert it to a <code>tf.Tensor</code> and call the <code>call()</code> function. If in eager mode,
+the function are directly called and executed eagerly. If in graph mode, we
+will need to convert the function to a computational graph before calling it.</p>
+<blockquote>
+<p><strong><em>TensorFlow API</em></strong> <br>
+<code>tf.function()</code> is the public API in TensorFlow for converting a normal
+function into a computation graph.
+(<a href="https://www.tensorflow.org/api_docs/python/tf/function">Link</a>)</p>
+</blockquote>
+<p>There is another use case that quite separated from the use case above, which
+is calling the layer with a
+<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/keras_tensor.py#L30"><code>KerasTensor</code></a>.
+It is a class used when creating models using the <a href="https://keras.io/guides/functional_api/">functional
+API</a>. It is a symbolic tensor without
+actual value, but only representing the shapes and types of intermediate output
+tensors between the layers. We will introduce more about it when we introduce
+the <code>Model</code> class.</p>
+<p>The pseudo-code for the <code>__call__()</code> function is shown as follows.</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Layer</span><span class="p">(</span><span class="n">module</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+
+  <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">keras_tensor</span><span class="o">.</span><span class="n">KerasTensor</span><span class="p">):</span>
+      <span class="n">inputs</span> <span class="o">=</span> <span class="n">convert_to_tf_tensor</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+      <span class="n">outputs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+      <span class="k">return</span> <span class="n">convert_to_keras_tensor</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+      <span class="n">inputs</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+
+    <span class="c1"># Check the inputs are compatible with the layer.</span>
+    <span class="n">input_spec</span><span class="o">.</span><span class="n">assert_input_compatibility</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_spec</span><span class="p">,</span> <span class="n">inputs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">executing_eagerly</span><span class="p">():</span>
+      <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+      <span class="n">call_fn</span> <span class="o">=</span> <span class="n">convert_to_tf_function</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">call</span><span class="p">)</span>
+      <span class="k">return</span> <span class="n">call_fn</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="input-compatibility-checking">Input compatibility checking</h3>
+<p>Notably, in the code above, the inputs compatibility is being checked before
+the actual call. This is to ensure the bug is being caught early and throw
+out a meaningful error message. If you run the following code, you will get an
+error. It calls the <code>Dense</code> layer with vectors of length 5 first, which causes
+the layer to initialize the weights for these vectors. Then, it calls the same
+layer again with vectors of length 4, which are not compatible with the weights
+created just now.</p>
+<div class="highlight"><pre><span></span><code><span class="n">layer</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">layer</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">layer</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</code></pre></div>
+<p>Error message:</p>
+<div class="highlight"><pre><span></span><code>ValueError: Input 0 of layer dense is incompatible with the layer: expected axis -1 of input shape to have value 5 but received input with shape (10, 4)
+</code></pre></div>
+<p>The inputs compatibility information is recorded in <code>self.input_spec</code> of a
+layer, which is a function with
+<a href="https://docs.python.org/3/library/functions.html#property"><code>@property</code></a>
+decorator. Now, we would like to see how are the <code>input_spec</code> being recorded
+and used to check new inputs.</p>
+<p>The base <code>Layer</code> class doesn't record this <code>input_spec</code>. Each layer should
+record their own <code>self.input_spec</code> in <code>build()</code>. In <code>build()</code>, they usually
+need to create the weights of the layer using the <code>input_shape</code>. Meanwhile,
+they can define a <code>self.input_spec</code> for what inputs are compatible with these
+weights. For example, in <code>Dense.build()</code>, they set the <code>input_spec</code> for a
+fixed last dimension by creating an <code>InputSpec</code> instance
+(<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/layers/core.py#L1177">Source</a>).</p>
+<p>The signature of the <code>InputSpec</code> is as follows. There are many specifications
+to set, like the shape, data type, number of dimensions, upper and lower bound
+of dimensions.</p>
+<p>(<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/input_spec.py#L29">Source</a>)</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">InputSpec</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+  <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+               <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">ndim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">max_ndim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">min_ndim</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">allow_last_axis_squeeze</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+               <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</code></pre></div>
+<p>In <code>__call__()</code>, <code>assert_input_compatibility()</code> would check all the
+specifications of the recorded <code>self.input_spec</code> for the given inputs for
+compatibility.</p>
+<p>(<a href="https://github.com/keras-team/keras/blob/v2.6.0/keras/engine/input_spec.py#L154">Source</a>)</p>
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../01-modeling-api-overview/" class="md-footer__link md-footer__link--prev" aria-label="Previous: 1. Modeling API overview" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              1. Modeling API overview
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../03-the-model-class/" class="md-footer__link md-footer__link--next" aria-label="Next: 3. The Model class" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              3. The Model class
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.361d90f1.min.js"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.289a2a4b.min.js"></script>
+      
+    
+  </body>
+</html>
